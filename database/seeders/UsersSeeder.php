@@ -15,6 +15,7 @@ class UsersSeeder extends Seeder
 
         $users = [
             ['name'=>'SCKagura','email'=>'sckagura9164@gmail.com','pass'=>'12345678','role'=>'admin'],
+            ['name'=>'Admin','email'=>'admin@example.com','pass'=>'12345678','role'=>'admin'],
             ['name'=>'staff','email'=>'staff@example.com','pass'=>'12345678','role'=>'staff'],
             ['name'=>'Customer','email'=>'customer@example.com','pass'=>'12345678','role'=>'customer'],
         ];
