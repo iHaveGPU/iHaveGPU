@@ -237,7 +237,7 @@ Staff: staff@example.com / password
 
 Customer: customer@example.com / password
 
-หากเจอ error Field 'password' doesn't have a default value ให้แน่ใจว่า
+หากเจอ error Field 'password' doesn't' have a default value ให้แน่ใจว่า
 ส่งค่า password เสมอ และ/หรือมี mutator แฮชรหัสผ่านใน User::setPasswordAttribute.
 
 📦 Build Frontend
