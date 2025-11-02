@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
-    // บทความทั้งหมด (เฉพาะเผยแพร่แล้ว)
+    // GET /articles  (เฉพาะเผยแพร่แล้ว)
     public function index(Request $request)
     {
         $q = Article::query()->published()->with('author')->latest('published_at');
@@ -25,7 +25,7 @@ class ArticleController extends Controller
         return view('articles.index', compact('articles'));
     }
 
-    // อ่านบทความ (slug)
+    // GET /articles/{article:slug}
     public function show(Article $article)
     {
         abort_unless($article->is_published && $article->published_at?->lte(now()), 404);

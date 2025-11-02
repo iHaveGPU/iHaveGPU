@@ -38,6 +38,8 @@
             </div>
 
             <div class="flex items-center gap-3">
+                {{-- สำคัญ: ส่ง is_published=0 เสมอ เพื่อกัน checkbox ไม่ถูกส่ง --}}
+                <input type="hidden" name="is_published" value="0">
                 <label class="inline-flex items-center gap-2">
                     <input type="checkbox" name="is_published" value="1">
                     <span>Publish now</span>

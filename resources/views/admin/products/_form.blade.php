@@ -102,15 +102,27 @@
   </div>
 
   {{-- Cover image --}}
-  <div>
-    <label class="block text-sm font-medium mb-1">Cover image</label>
-    <input type="file" name="cover_image" accept="image/*" class="border rounded px-3 py-2 w-full">
-    @error('cover_image')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
-    @if(!empty($product->cover_image))
-      <img src="{{ $product->cover_url ?? Storage::disk('public')->url($product->cover_image) }}"
-           class="mt-2 h-24 rounded object-cover" alt="cover">
-    @endif
-  </div>
+  {{-- Cover image --}}
+<div>
+  <label class="block text-sm font-medium mb-1">Cover image</label>
+
+  {{-- preview (ถ้ามี) --}}
+  @if(!empty($product->cover_image))
+    <img src="{{ $product->cover_image_url }}"
+         alt="cover"
+         class="mt-1 h-24 w-auto rounded border object-cover">
+  @endif
+
+  {{-- file input --}}
+  <input type="file"
+         name="cover_image"
+         accept="image/*"
+         class="mt-2 w-full border rounded px-3 py-2">
+  @error('cover_image')
+    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+  @enderror
+</div>
+
 
   {{-- Attributes (dynamic) --}}
   <div>

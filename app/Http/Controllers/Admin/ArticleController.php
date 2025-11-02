@@ -51,7 +51,7 @@ class ArticleController extends Controller
             'excerpt'      => ['nullable','string','max:500'],
             'body'         => ['required','string'],
             'cover_image'  => ['nullable','image','max:2048'], // 2MB
-            'is_published' => ['sometimes','boolean'],
+            'is_published' => ['required','boolean'],          // มาจาก hidden+checkbox
             'published_at' => ['nullable','date'],
         ]);
 
@@ -66,9 +66,12 @@ class ArticleController extends Controller
         }
 
         $data['author_id'] = $request->user()->id;
-        $data['is_published'] = (bool) ($data['is_published'] ?? false);
+
         if ($data['is_published'] && empty($data['published_at'])) {
             $data['published_at'] = now();
+        }
+        if (!$data['is_published']) {
+            $data['published_at'] = null;
         }
 
         Article::create($data);
@@ -93,12 +96,13 @@ class ArticleController extends Controller
             'excerpt'      => ['nullable','string','max:500'],
             'body'         => ['required','string'],
             'cover_image'  => ['nullable','image','max:2048'],
-            'is_published' => ['sometimes','boolean'],
+            'is_published' => ['required','boolean'], // hidden+checkbox ช่วยให้ key นี้ส่งมาเสมอ
             'published_at' => ['nullable','date'],
         ]);
 
-        $data['slug'] = $data['slug'] ? $this->uniqueSlug($data['slug'], $article->id)
-                                      : $this->uniqueSlug(Str::slug($data['title']), $article->id);
+        $data['slug'] = $data['slug']
+            ? $this->uniqueSlug($data['slug'], $article->id)
+            : $this->uniqueSlug(Str::slug($data['title']), $article->id);
 
         if ($request->hasFile('cover_image')) {
             if ($article->cover_image) {
@@ -107,7 +111,6 @@ class ArticleController extends Controller
             $data['cover_image'] = $request->file('cover_image')->store('articles', 'public');
         }
 
-        $data['is_published'] = (bool) ($data['is_published'] ?? false);
         if ($data['is_published'] && empty($data['published_at'])) {
             $data['published_at'] = now();
         }

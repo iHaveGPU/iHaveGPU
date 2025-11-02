@@ -2,41 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Article extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'title','slug','excerpt','content','cover_image',
-        'author_id','published_at','is_published',
+        'title',
+        'slug',
+        'excerpt',
+        'body',
+        'cover_image',
+        'is_published',
+        'published_at',
+        'author_id',
     ];
 
     protected $casts = [
-        'published_at' => 'datetime',
         'is_published' => 'boolean',
+        'published_at' => 'datetime',
     ];
 
-    // สร้าง slug อัตโนมัติถ้าไม่ได้ส่งมา
-    protected static function booted()
+    public function author(): BelongsTo
     {
-        static::creating(function ($a) {
-            if (empty($a->slug)) {
-                $a->slug = Str::slug(Str::limit($a->title, 60, ''));
-            }
-        });
-    }
-
-    public function author()
-    {
+        // ถ้าใช้ App\Models\User
         return $this->belongsTo(User::class, 'author_id');
     }
 
-    // Scope เฉพาะบทความเผยแพร่แล้ว
-    public function scopePublished($q)
+    /** ใช้ slug เป็น route key */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /** scope บทความที่เผยแพร่แล้ว */
+    public function scopePublished(Builder $q): Builder
     {
         return $q->where('is_published', true)
                  ->whereNotNull('published_at')

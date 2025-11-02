@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-
+use App\Providers\RouteServiceProvider;  
 class RegisteredUserController extends Controller
 {
     /**
-     * Show register form.
+     * Display the registration view.
      */
     public function create(): View
     {
@@ -23,28 +23,28 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle registration.
+     * Handle an incoming registration request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name'     => ['required', 'string', 'max:255'],
-        'email'    => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
-        'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    ]);
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
 
-    // ถ้า **ไม่ได้** เปิด 'password' => 'hashed' ใน $casts ให้แฮชตรงนี้
-    $user = User::create([
-        'name'     => (string) $validated['name'],
-        'email'    => strtolower($validated['email']),
-        'password' => Hash::make($validated['password']),
-        'role'     => 'customer',
-    ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
         event(new Registered($user));
 
         Auth::login($user);
-        // กลับไปหน้าที่ตั้งใจไว้ก่อนสมัคร (ถ้ามี) ไม่มีก็หน้าแรก
-        return redirect()->intended(route('home'));
+
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 }

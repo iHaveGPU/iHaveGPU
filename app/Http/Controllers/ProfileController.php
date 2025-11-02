@@ -24,27 +24,34 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(Request $request)
+    public function update(ProfileUpdateRequest $request): RedirectResponse
 {
-    $user = $request->user();
-
-    $data = $request->validate([
-        'name'     => ['required','string','max:255'],
-        'email'    => ['required','email','max:255','unique:users,email,'.$user->id],
-        'phone'    => ['nullable','string','max:50'],
-        'line_id'  => ['nullable','string','max:50'],
-        'address1' => ['nullable','string','max:255'],
-        'address2' => ['nullable','string','max:255'],
-        'district' => ['nullable','string','max:100'],
-        'province' => ['nullable','string','max:100'],
-        'postcode' => ['nullable','string','max:10'],
+    // รับเฉพาะฟิลด์ที่ validate แล้ว
+    $data = $request->safe()->only([
+        'name','email',
+        'phone','line_id',
+        'address1','address2','district','province','postcode',
     ]);
 
-    $user->update($data);
+    // แปลงค่าว่างให้เป็น null
+    array_walk($data, function (&$v) {
+        if (is_string($v)) {
+            $v = trim($v);
+            if ($v === '') $v = null;
+        }
+    });
 
-    return back()->with('status','profile-updated');
+    $user = $request->user();
+    $user->fill($data);
+
+    if ($user->isDirty('email')) {
+        $user->email_verified_at = null;
+    }
+
+    $user->save();
+
+    return Redirect::route('profile.edit')->with('status', 'profile-updated');
 }
-
 
     /**
      * Delete the user's account.

@@ -15,10 +15,10 @@ return new class extends Migration {
             $t->timestamp('email_verified_at')->nullable();
             $t->string('password');
 
-            // RBAC ง่ายๆ
+            // RBAC เบื้องต้น
             $t->enum('role', ['admin','staff','customer'])->default('customer');
 
-            // ที่อยู่ / โปรไฟล์
+            // โปรไฟล์ / ที่อยู่
             $t->string('phone')->nullable();
             $t->string('line_id')->nullable();
             $t->string('address1')->nullable();

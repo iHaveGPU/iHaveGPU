@@ -5,12 +5,22 @@
         @if($article->cover_image)
             <img src="{{ asset('storage/'.$article->cover_image) }}" class="rounded mb-4">
         @endif
+
         <div class="text-gray-500 text-sm mb-4">
             เผยแพร่: {{ optional($article->published_at)->format('d M Y H:i') }}
         </div>
+
         @if($article->excerpt)
             <p class="text-gray-700 mb-4">{{ $article->excerpt }}</p>
         @endif
+
+        {{-- เลือก ONE: ถ้า body เป็นข้อความล้วน ให้ใช้ nl2br(e(...)) --}}
         <article class="prose max-w-none">{!! nl2br(e($article->body)) !!}</article>
+
+        {{-- หรือ ถ้า body เป็น HTML ที่ไว้ใจได้ และคุณติดตั้ง purifier แล้ว --}}
+        {{-- <article class="prose max-w-none">{!! Purifier::clean($article->body) !!}</article> --}}
+
+        {{-- หรือ ถ้า body เป็น HTML และคุณยอมรับความเสี่ยง (เฉพาะ admin เขียน) --}}
+        {{-- <article class="prose max-w-none">{!! $article->body !!}</article> --}}
     </div>
 </x-app-layout>

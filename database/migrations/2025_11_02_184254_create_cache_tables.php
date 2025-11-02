@@ -19,6 +19,7 @@ return new class extends Migration {
             $t->integer('expiration');
         });
     }
+
     public function down(): void
     {
         Schema::dropIfExists('cache_locks');

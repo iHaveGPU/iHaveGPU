@@ -1,82 +1,93 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    /**
-     * แสดงรายการออเดอร์ (กรองสถานะได้)
-     */
-    public function index(Request $request)
+    // GET /checkout
+    public function create(Request $request)
     {
-        // $this->authorize('order.viewAny'); // ถ้าเปิด Gate/Policy
-        $q = Order::query()
-            ->with(['user'])
-            ->latest();
+        $user = $request->user();
 
-        if ($status = $request->get('status')) {
-            $q->where('status', $status);
-        }
+        // ดึงตะกร้าจาก session (ปรับตามที่คุณเก็บได้)
+        $cart = collect(session('cart', [])); // [{product_id, name, price, qty}, ...]
+        $subtotal = $cart->sum(fn ($row) => (float)$row['price'] * (int)$row['qty']);
 
-        $orders = $q->paginate(15);
+        // ค่าเริ่มต้นจากโปรไฟล์ (ใช้เป็น both placeholder + value)
+        $defaults = [
+            'ship_name'     => $user->name ?? '',
+            'ship_phone'    => $user->phone ?? '',
+            'ship_address1' => $user->address1 ?? '',
+            'ship_address2' => $user->address2 ?? '',
+            'ship_district' => $user->district ?? '',
+            'ship_province' => $user->province ?? '',
+            'ship_postcode' => $user->postcode ?? '',
+        ];
 
-        return view('admin.orders.index', compact('orders'));
+        // ใช้วิวตาม resource create
+        return view('orders.create', compact('cart', 'subtotal', 'defaults'));
     }
 
-    /**
-     * แสดงรายละเอียดออเดอร์
-     */
-    public function show(Order $order)
+    // POST /checkout
+    public function store(Request $request)
     {
-        // $this->authorize('order.viewAny');
-        $order->load(['items.product', 'user']);
-        return view('admin.orders.show', compact('order'));
-    }
-
-    /**
-     * อัปเดตสถานะออเดอร์ (staff/admin)
-     */
-    public function update(Request $request, Order $order)
-    {
-        // $this->authorize('order.update');
-        $validated = $request->validate([
-            'status' => 'required|in:pending,paid,shipped,cancelled',
+        $data = $request->validate([
+            'ship_name'     => ['required','string','max:255'],
+            'ship_phone'    => ['nullable','string','max:50'],
+            'ship_address1' => ['required','string','max:255'],
+            'ship_address2' => ['nullable','string','max:255'],
+            'ship_district' => ['required','string','max:120'],
+            'ship_province' => ['required','string','max:120'],
+            'ship_postcode' => ['required','string','max:10'],
         ]);
 
-        $order->update(['status' => $validated['status']]);
+        $user = $request->user();
+        $cart = collect(session('cart', []));
+        abort_if($cart->isEmpty(), 400, 'Cart is empty');
 
-        return back()->with('success', 'Order status updated.');
+        return DB::transaction(function () use ($user, $cart, $data) {
+            // คำนวณยอด
+            $subtotal = $cart->sum(fn ($row) => (float)$row['price'] * (int)$row['qty']);
+
+            // สร้างออเดอร์ (total = subtotal ในระบบนี้)
+            $order = Order::create(array_merge($data, [
+                'user_id'  => $user->id,
+                'status'   => Order::STATUS_PENDING,
+                'subtotal' => $subtotal,
+                'total'    => $subtotal,
+            ]));
+
+            // สร้างรายการสินค้า
+            foreach ($cart as $row) {
+                OrderItem::create([
+                    'order_id'  => $order->id,
+                    'product_id'=> $row['product_id'] ?? null,
+                    'name'      => $row['name'] ?? '-',
+                    'sku'       => $row['sku'] ?? null,
+                    'price'     => (float)$row['price'],
+                    'qty'       => (int)$row['qty'],
+                    'subtotal'  => (float)$row['price'] * (int)$row['qty'],
+                ]);
+            }
+
+            // เคลียร์ตะกร้า
+            session()->forget('cart');
+
+            return redirect()->route('orders.show', $order)
+                ->with('success', 'Order placed.');
+        });
     }
 
-    /**
-     * ลบออเดอร์ (admin)
-     */
-    public function destroy(\App\Models\Order $order)
-{
-    $user = auth()->user();
-
-    // ถ้าไม่ใช่แอดมิน -> ไม่ให้ลบ แต่แจ้งเป็น flash message
-    if (! $user || ! method_exists($user, 'isAdmin') || ! $user->isAdmin()) {
-        return redirect()
-            ->back()
-            ->with('error', 'คุณไม่มีสิทธิ์ลบออเดอร์นี้ (เฉพาะ Admin เท่านั้น)');
+    // GET /orders/{order}
+    public function show(Order $order)
+    {
+        $this->authorize('view', $order); // ถ้ามี Policy
+        $order->load(['items.product','user']);
+        return view('orders.show', compact('order'));
     }
-
-    // ดำเนินการลบ
-    $order->items()->delete(); // ถ้ามีความสัมพันธ์รายการ
-    $order->delete();
-
-    return redirect()
-        ->route('manage.orders.index')
-        ->with('success', 'ลบออเดอร์เรียบร้อยแล้ว');
-}
-
-    // ไม่ใช้ในหลังบ้าน (ออเดอร์ถูกสร้างจากฝั่งลูกค้า)
-    public function create() { abort(404); }
-    public function store(Request $request) { abort(404); }
-    public function edit(Order $order) { abort(404); }
 }

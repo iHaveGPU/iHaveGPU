@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
     AddCaseSeeder::class,
     AddMonitorSeeder::class,
     AddMouseSeeder::class, 
+    AddArticleSeeder::class,
+    AddContactSeeder::class,
+    AddComputerSetSeeder::class,
         ]);
     }
 }

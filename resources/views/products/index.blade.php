@@ -68,8 +68,15 @@
                     <a href="{{ route('products.show', $p) }}"
                       rel="noopener"
                        class="p-4 bg-white rounded shadow hover:shadow-md block">
-                        <img src="{{ $p->cover_url }}" alt="{{ $p->name }}"
-                             class="w-full h-40 object-cover rounded mb-3">
+                        <img
+  src="{{ $p->cover_image_url }}"
+  alt="{{ $p->name }}"
+  class="w-full h-40 object-cover rounded mb-3"
+  loading="lazy"
+  onerror="this.src='{{ asset('images/placeholder-product.png') }}';"
+/>
+
+
                         <div class="text-lg font-semibold line-clamp-2">{{ $p->name }}</div>
 
                         {{-- แสดงแบรนด์ (ถ้ามี) --}}

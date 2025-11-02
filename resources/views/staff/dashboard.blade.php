@@ -12,7 +12,6 @@
     @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {{-- Products --}}
       @if (Route::has('manage.products.index'))
         <a href="{{ route('manage.products.index') }}"
            class="block p-5 bg-white rounded-2xl shadow hover:shadow-lg transition">
@@ -21,7 +20,6 @@
         </a>
       @endif
 
-      {{-- Categories --}}
       @if (Route::has('manage.categories.index'))
         <a href="{{ route('manage.categories.index') }}"
            class="block p-5 bg-white rounded-2xl shadow hover:shadow-lg transition">
@@ -30,7 +28,6 @@
         </a>
       @endif
 
-      {{-- Articles --}}
       @if (Route::has('manage.articles.index'))
         <a href="{{ route('manage.articles.index') }}"
            class="block p-5 bg-white rounded-2xl shadow hover:shadow-lg transition">
@@ -39,7 +36,6 @@
         </a>
       @endif
 
-      {{-- Computer Sets --}}
       @if (Route::has('manage.sets.index'))
         <a href="{{ route('manage.sets.index') }}"
            class="block p-5 bg-white rounded-2xl shadow hover:shadow-lg transition">
@@ -48,12 +44,20 @@
         </a>
       @endif
 
-      {{-- Orders (index/show) --}}
+      {{-- แสดง Brands ให้ staff จัดการได้ด้วย --}}
+      @if (Route::has('manage.brands.index'))
+        <a href="{{ route('manage.brands.index') }}"
+           class="block p-5 bg-white rounded-2xl shadow hover:shadow-lg transition">
+          <div class="text-lg font-semibold">Brands</div>
+          <p class="text-sm text-gray-600 mt-1">Manage Brands</p>
+        </a>
+      @endif
+
       @if (Route::has('manage.orders.index'))
         <a href="{{ route('manage.orders.index') }}"
            class="block p-5 bg-white rounded-2xl shadow hover:shadow-lg transition">
           <div class="text-lg font-semibold">Orders</div>
-          <p class="text-sm text-gray-600 mt-1">View Orders</p>
+          <p class="text-sm text-gray-600 mt-1">View & Update Orders</p>
         </a>
       @endif
     </div>

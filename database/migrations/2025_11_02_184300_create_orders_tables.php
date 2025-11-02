@@ -11,9 +11,9 @@ return new class extends Migration {
             $t->id();
             $t->foreignId('user_id')->constrained('users')->cascadeOnDelete();
 
-            $t->string('number', 50)->nullable();  // ให้ Model gen เอง
+            $t->string('number', 50)->nullable()->index(); // ให้ Model gen เอง
             $t->enum('status', ['pending','paid','shipped','cancelled'])->default('pending');
-            $t->string('payment_method')->default('cod');
+            $t->string('payment_method')->nullable(); // เผื่อ NULL
 
             $t->decimal('subtotal', 12, 2)->default(0);
             $t->decimal('shipping_fee', 12, 2)->default(0);
@@ -29,14 +29,11 @@ return new class extends Migration {
             $t->string('ship_postcode', 10)->nullable();
 
             $t->timestamps();
-            $t->index('number');
         });
 
         Schema::create('order_items', function (Blueprint $t) {
             $t->id();
             $t->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
-
-            // อนุญาตให้ product ถูกลบทีหลังได้ โดยประวัติยังอยู่
             $t->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
 
             // snapshot
@@ -47,6 +44,7 @@ return new class extends Migration {
             $t->decimal('subtotal', 12, 2);
 
             $t->timestamps();
+
             $t->index('order_id');
             $t->index('product_id');
         });

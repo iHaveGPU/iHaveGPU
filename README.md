@@ -1,306 +1,61 @@
-# iHaveGPU — Mini E-commerce for PC Parts (Laravel + Breeze + Sail)
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-ระบบเว็บแอปขายอุปกรณ์คอมพิวเตอร์ (CPU/GPU/อุปกรณ์อื่น ๆ) สำหรับเดสก์ท็อป/โน้ตบุ๊ก
-รองรับบทบาท **Admin / Staff / Customer**, ตะกร้าสินค้า, การสั่งซื้อ, **ชุดสินค้า (Computer Set)** และบทความข่าวสาร
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
----
+## About Laravel
 
-## ✨ Features
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
--   **สินค้า, แบรนด์, หมวดหมู่, สต็อก** (`products`, `brands`, `categories`, `stocks`)
--   **ชุดสินค้า (Computer Sets)** + คำนวณราคารวมของชุด
--   **ตะกร้า + Checkout →** สร้าง `orders` / `order_items`
--   **บทความ/ข่าว (Articles)**
--   **บทบาทผู้ใช้**
-    -   **Admin**: จัดการได้ทุกอย่าง (รวม Users/Brands/Contacts, ลบ Order)
-    -   **Staff**: จัดการสินค้า/หมวดหมู่/บทความ/ชุดสินค้า/ดูและแก้สถานะ Order _(ลบ Order ไม่ได้)_
-    -   **Customer**: ซื้อสินค้า, ดูคำสั่งซื้อของตนเอง
--   หน้า **Public**: Home, Devices (products), Computer set, Articles, Categories
--   หน้า **Auth**: Login/Register (UI ปรับธีม), โปรไฟล์
--   **Image storage** ผ่าน `public` disk (ใช้ `storage:link`)
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
----
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## 🛠 Tech Stack
+## Learning Laravel
 
--   **Laravel 12** + **PHP 8.4** (พัฒนา/รันผ่าน **Laravel Sail** + Docker)
--   **Breeze** (Blade + TailwindCSS)
--   **MySQL/MariaDB**
--   **Policies/Middleware** สำหรับ Role-based access
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
----
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-## 🚀 Quick Start (Laravel Sail)
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-1.  ติดตั้ง dependencies
+## Laravel Sponsors
 
-```bash
-composer install
-```
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-2.  คัดลอก env และตั้งค่า DB
+### Premium Partners
 
-```bash
-cp .env.example .env
-php artisan key:generate
-```
+- **[Vehikl](https://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Redberry](https://redberry.international/laravel-development)**
+- **[Active Logic](https://activelogic.com)**
 
-3.  ถ้าใช้ Sail (Docker)
+## Contributing
 
-```bash
-./vendor/bin/sail up -d
-```
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-4.  เตรียม Storage symlink
+## Code of Conduct
 
-```bash
-./vendor/bin/sail artisan storage:link
-```
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-5.  migrate + seed (ข้อมูลตัวอย่าง)
+## Security Vulnerabilities
 
-```bash
-./vendor/bin/sail artisan migrate --seed
-```
-
-หากต้องการล้างฐานทั้งหมดและ seed ใหม่:
-
-```bash
-./vendor/bin/sail artisan migrate:fresh --seed
-```
-
-ตัวอย่าง seeders ที่ใช้บ่อย:
-
--   `Database\\Seeders\\DemoSeeder` — สร้างตัวอย่าง Users/Categories/Brands/Products/Articles
--   `Database\\Seeders\\AddCPUSeeder` — เพิ่มชุดสินค้าตัวอย่าง
-
-รัน seeder เฉพาะคลาส:
-
-```bash
-./vendor/bin/sail artisan db:seed --class=Database\\\\Seeders\\\\AddCPUSeeder
-```
-
-บัญชีตัวอย่างจาก `DemoSeeder`:
-
--   Admin: `admin@example.com` / `password`
--   Staff: `staff@example.com` / `password`
--   Customer: `customer@example.com` / `password`
-
-หมายเหตุ: หากเจอ error "Field 'password' doesn't have a default value" ให้แน่ใจว่าโค้ดทุกจุดที่สร้างผู้ใช้ส่งค่า `password` เสมอ หรือมี mutator ใน `User::setPasswordAttribute` เพื่อแฮช/เซ็ตค่าเริ่มต้น
-
-### 📦 Build Frontend
-
-หากมีการแก้ Tailwind/JS ให้รัน Vite ด้วย Sail:
-
-```bash
-./vendor/bin/sail npm install
-./vendor/bin/sail npm run dev   # development
-./vendor/bin/sail npm run build # production
-```
-
-### 🔐 Roles & Access
-
-Middleware: `RoleMiddleware` — ตัวอย่างการใช้งาน: `role:admin`, `role:staff,admin`, `role:customer`
-
-เส้นทางจัดการหลังบ้านอยู่ภายใต้ prefix `/manage`:
-
--   Staff + Admin: products, categories, articles, sets, orders (index/show/update)
--   Admin only: users, brands, contacts, orders:destroy
-
-ปุ่ม “ลบออเดอร์” จะไม่แสดงต่อ Staff และหากผู้ใช้ Staff ยิงคำขอลบโดยตรงจะถูกปฏิเสธพร้อม flash message ว่า "ไม่มีสิทธิ์"
-
-### 🗂 โครงสร้างข้อมูลหลัก
-
--   `products` (สัมพันธ์กับ brand, category, stock, และ attributes)
--   `stocks` (จำนวนคงเหลือต่อสินค้า)
--   `order_items` (qty, unit_price, subtotal)
--   `computer_sets` + pivot `computer_set_product` (qty ต่อ item)
-
-### 🖼 รูปภาพ
-
-อัปโหลด/แสดงผ่าน `Storage::disk('public')` — วางรูปเริ่มต้น/โลโก้ใน `public/images/` และรัน `storage:link` เพื่อให้ `storage/app/public` เข้าถึงได้จาก `/storage/`
-
-### ✅ การทดสอบอย่างง่าย
-
-เคลียร์แคชต่าง ๆ เมื่อเปลี่ยนโค้ด/เส้นทาง:
-
-```bash
-./vendor/bin/sail artisan optimize:clear
-```
-
-### 🧩 Troubleshooting
-
--   password ไม่มีค่า
-
-    -   ตรวจ `RegisteredUserController@store` ว่าบันทึก password ที่ผ่าน `Hash::make(...)` แล้ว
-    -   ใน `User` อาจมี mutator ตัวอย่าง:
-
-    ```php
-    public function setPasswordAttribute($value)
-    {
-        if (empty($value)) {
-            $this->attributes['password'] = null;
-            return;
-        }
-
-        if (is_string($value) && strlen($value) === 60 && str_starts_with($value, '$2y$')) {
-            $this->attributes['password'] = $value;
-        } else {
-            $this->attributes['password'] = bcrypt($value);
-        }
-    }
-    ```
-
--   รูปไม่ขึ้น
-
-    -   ตรวจว่าเรียก `Storage::disk('public')->url($path)` และรัน `storage:link`
-
--   Staff ลบออเดอร์ไม่ได้
-
-    -   เป็นดีไซน์ความปลอดภัย: ปุ่มลบจะไม่แสดงต่อ Staff และหากยิงคำขอลบโดยตรงจะถูก redirect กลับพร้อม flash "ไม่มีสิทธิ์"
-
----
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
 ## License
 
-MIT
-
-# iHaveGPU — Mini E-commerce for PC Parts (Laravel + Breeze + Sail)
-
-ระบบเว็บแอปขายอุปกรณ์คอมพิวเตอร์ (CPU/GPU/อุปกรณ์อื่น ๆ) สำหรับเดสก์ท็อป/โน้ตบุ๊ก  
-รองรับบทบาท **Admin / Staff / Customer**, ตะกร้าสินค้า, การสั่งซื้อ, **ชุดสินค้า (Computer Set)** และบทความข่าวสาร
-
----
-
-## ✨ Features
-
--   **สินค้า, แบรนด์, หมวดหมู่, สต็อก** (`products`, `brands`, `categories`, `stocks`)
--   **ชุดสินค้า (Computer Sets)** + คำนวณราคารวมของชุด
--   **ตะกร้า + Checkout →** สร้าง `orders` / `order_items`
--   **บทความ/ข่าว (Articles)**
--   **บทบาทผู้ใช้**
-    -   **Admin**: จัดการได้ทุกอย่าง (รวม Users/Brands/Contacts, ลบ Order)
-    -   **Staff**: จัดการสินค้า/หมวดหมู่/บทความ/ชุดสินค้า/ดูและแก้สถานะ Order _(ลบ Order ไม่ได้)_
-    -   **Customer**: ซื้อสินค้า, ดูคำสั่งซื้อของตนเอง
--   หน้า **Public**: Home, Devices (products), Computer set, Articles, Categories
--   หน้า **Auth**: Login/Register (UI ปรับธีม), โปรไฟล์
--   **Image storage** ผ่าน `public` disk (ใช้ `storage:link`)
-
----
-
-## 🛠 Tech Stack
-
--   **Laravel 12** + **PHP 8.4** (พัฒนา/รันผ่าน **Laravel Sail** + Docker)
--   **Breeze** (Blade + TailwindCSS)
--   **MySQL/MariaDB**
--   **Policies/Middleware** สำหรับ Role-based access
-
----
-
-## 🚀 Quick Start (Laravel Sail)
-
-```bash
-# 1) ติดตั้ง dependencies
-composer install
-
-# 2) คัดลอก env และตั้งค่า DB
-cp .env.example .env
-php artisan key:generate
-
-# ถ้าใช้ Sail
-./vendor/bin/sail up -d
-
-# 3) เตรียม Storage symlink
-./vendor/bin/sail artisan storage:link
-
-# 4) migrate + seed (ข้อมูลตัวอย่าง)
-./vendor/bin/sail artisan migrate --seed
-ต้องการล้างฐานทั้งหมด:
-
-bash
-Copy code
-./vendor/bin/sail artisan migrate:fresh --seed
-🌱 Seeders ที่ใช้บ่อย
-Database\Seeders\DemoSeeder — สร้างตัวอย่าง Users/Categories/Brands/Products/Articles
-
-Database\Seeders\AddCPUSeeder — เพิ่มสินค้าชุด CPU/GPU ทีละ 5 ชิ้น (เช่น Ryzen/Core Ultra & RX 6500 XT)
-
-รันแบบระบุคลาส:
-
-bash
-Copy code
-./vendor/bin/sail artisan db:seed --class=Database\\Seeders\\AddCPUSeeder
-👤 บัญชีตัวอย่าง (จาก DemoSeeder)
-Admin: admin@example.com / password
-
-Staff: staff@example.com / password
-
-Customer: customer@example.com / password
-
-หากเจอ error Field 'password' doesn't' have a default value ให้แน่ใจว่า
-ส่งค่า password เสมอ และ/หรือมี mutator แฮชรหัสผ่านใน User::setPasswordAttribute.
-
-📦 Build Frontend
-หากมีการแก้ Tailwind/JS ให้รัน Vite:
-
-bash
-Copy code
-# Dev
-./vendor/bin/sail npm install
-./vendor/bin/sail npm run dev
-
-# Prod
-./vendor/bin/sail npm run build
-🔐 Roles & Access
-Middleware: RoleMiddleware:admin, :staff,admin, :customer
-
-เส้นทางจัดการหลังบ้านอยู่ภายใต้ prefix /manage
-
-Staff + Admin: products, categories, articles, sets, orders (index/show/update)
-
-Admin only: users, brands, contacts, orders:destroy
-
-ปุ่ม “ลบออเดอร์” จะ ไม่แสดง ต่อ Staff และหากเรียกโดยตรงจะถูกปฏิเสธพร้อมข้อความเตือน
-
-🗂 โครงสร้างข้อมูลหลัก
-products (สัมพันธ์ brand, category, stock, และ attributes() ถ้ามี)
-
-stocks (จำนวนคงเหลือต่อสินค้า)
-
-order_items (qty, unit_price, subtotal)
-
-computer_sets + pivot computer_set_product (qty ต่อ item)
-
-🖼 รูปภาพ
-อัปโหลด/แสดงผ่าน Storage::disk('public')
-
-วางรูปเริ่มต้น/โลโก้ใน public/images/...
-
-รัน storage:link เพื่อให้ storage/app/public เข้าได้จาก /storage/...
-
-✅ การทดสอบอย่างง่าย
-bash
-Copy code
-# เคลียร์แคชต่าง ๆ เมื่อเปลี่ยนโค้ด/เส้นทาง
-./vendor/bin/sail artisan optimize:clear
-🧩 Troubleshooting
-password ไม่มีค่า
-ตรวจ RegisteredUserController@store ว่าบันทึก password ที่ผ่าน Hash::make(...) แล้ว
-และใน User อาจมี mutator:
-
-php
-Copy code
-public function setPasswordAttribute($value) {
-    if ($value && strlen($value) < 60) {
-        $this->attributes['password'] = bcrypt($value);
-    }
-}
-รูปไม่ขึ้น
-ตรวจว่าเรียก Storage::disk('public')->url($path) และทำ symlink แล้ว (storage:link)
-
-Staff ลบออเดอร์ไม่ได้
-เป็นดีไซน์ความปลอดภัย: ปุ่มลบจะไม่แสดง และหากยิงตรงให้ redirect กลับพร้อม flash “ไม่มีสิทธิ์”
-
-📄 License
-MIT
-```
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
