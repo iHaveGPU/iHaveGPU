@@ -35,7 +35,7 @@ use App\Http\Controllers\Admin\ComputerSetController as AdminComputerSetControll
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\ContactChannelController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\Admin\BrandController    as AdminBrandController;
+use App\Http\Controllers\Admin\BrandController   as AdminBrandController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,7 +100,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
         Route::patch('/cart/update/{product}', [CartController::class, 'updateQty'])->name('cart.update');
 
-        // Add whole set
+        // Add whole set to cart
         Route::post('/sets/{set}/add-to-cart', [CartController::class, 'addSet'])->name('cart.addSet');
 
         // Checkout & view own order
@@ -112,7 +112,8 @@ Route::middleware('auth')->group(function () {
     /*
     |----------------------------------------------------------------------
     | Staff + Admin (/manage)
-    |  - orders: index/show/update/destroy (แต่สิทธิ์ลบไปเช็คใน Controller)
+    |  - products / categories / articles / sets / brands
+    |  - orders: index/show/update/destroy (สิทธิ์ลบกรองใน Controller/Policy)
     |----------------------------------------------------------------------
     */
     Route::middleware([RoleMiddleware::class . ':staff,admin'])
@@ -130,25 +131,28 @@ Route::middleware('auth')->group(function () {
                 ->parameters(['categories' => 'category'])
                 ->names('categories');
 
-            // Orders: staff+admin เข้าถึงได้ทั้งหมด (destroy จะถูกกรองสิทธิ์ใน Controller)
+            // ให้ staff จัดการ brands ได้ด้วย
+            Route::resource('brands', AdminBrandController::class);
+
+            // Orders สำหรับ staff+admin (destroy จะถูกบล็อกถ้าไม่ใช่ admin ใน Controller/Policy)
             Route::resource('orders', AdminOrderController::class)
                 ->only(['index','show','update','destroy']);
 
-            // (option) เปลี่ยนสถานะแบบเร็ว
+            // (ออปชัน) ปุ่มเปลี่ยนสถานะแบบเร็ว
             Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
                 ->name('orders.updateStatus');
         });
 
     // Staff Dashboard (optional)
-    Route::middleware([RoleMiddleware::class . ':staff,admin'])->group(function () {
-        Route::get('/staff', fn () => view('staff.dashboard'))->name('staff.dashboard');
-    });
+    Route::middleware([RoleMiddleware::class . ':staff,admin'])
+        ->get('/staff', fn () => view('staff.dashboard'))
+        ->name('staff.dashboard');
 
     /*
     |----------------------------------------------------------------------
     | Admin only
-    |  - manage users/contacts/brands
-    |  (อย่าประกาศ orders::destroy ซ้ำ)
+    |  - users / contacts
+    |  (อย่าประกาศ brands หรือ orders ซ้ำ)
     |----------------------------------------------------------------------
     */
     Route::middleware([RoleMiddleware::class . ':admin'])->group(function () {
@@ -160,8 +164,6 @@ Route::middleware('auth')->group(function () {
             Route::resource('contacts', ContactChannelController::class)
                 ->parameters(['contacts' => 'contact'])
                 ->names('contacts');
-
-            Route::resource('brands',   AdminBrandController::class);
         });
     });
 });

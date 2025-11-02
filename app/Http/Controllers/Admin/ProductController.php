@@ -65,19 +65,19 @@ class ProductController extends Controller
 
         // อัปโหลดปก (ถ้ามี)
         if ($request->hasFile('cover_image')) {
-            $data['cover_image'] = $request->file('cover_image')->store('products', 'public');
+            $data['cover_image'] = $request->file('cover_image')->store('products', 'public'); // storage/app/public/products/xxx.png
         }
 
         // สร้างสินค้า
         $product = Product::create([
-            'name'        => $data['name'],
-            'sku'         => $data['sku'] ?? null,
-            'price'       => $data['price'],
-            'status'      => $data['status'],
-            'category_id' => $data['category_id'] ?? null,
-            'brand_id'    => $data['brand_id'] ?? null,
-            'cover_image' => $data['cover_image'] ?? null,
-        ]);
+    'name'        => $data['name'],
+    'sku'         => $data['sku'] ?? null,
+    'price'       => $data['price'],
+    'status'      => $data['status'],
+    'category_id' => $data['category_id'] ?? null,
+    'brand_id'    => $data['brand_id'] ?? null,
+    'cover_image' => $data['cover_image'] ?? null, // <- เก็บพาธสัมพัทธ์ของ disk public
+]);
 
         // สต็อกเริ่มต้น (ถ้ามี)
         if (array_key_exists('qty', $data)) {
@@ -135,23 +135,25 @@ class ProductController extends Controller
         ]);
 
         // อัปโหลดปกใหม่ (ลบรูปเก่า)
-        if ($request->hasFile('cover_image')) {
-            if ($product->cover_image) {
-                Storage::disk('public')->delete($product->cover_image);
-            }
-            $data['cover_image'] = $request->file('cover_image')->store('products', 'public');
-        }
+       if ($request->hasFile('cover_image')) {
+    if ($product->cover_image && \Illuminate\Support\Str::startsWith($product->cover_image, ['products/', 'uploads/', 'images/']) ) {
+        // ลบทิ้งเฉพาะไฟล์ที่อยู่บน disk public (กันพลาดสำหรับรูปที่มาจาก seeder จะไม่ลบไฟล์ใต้ public/images)
+        \Storage::disk('public')->delete($product->cover_image);
+    }
+
+    $data['cover_image'] = $request->file('cover_image')->store('products', 'public');
+}
 
         // อัปเดตข้อมูลหลัก
         $product->update([
-            'name'        => $data['name'],
-            'sku'         => $data['sku'] ?? null,
-            'price'       => $data['price'],
-            'status'      => $data['status'],
-            'category_id' => $data['category_id'] ?? null,
-            'brand_id'    => $data['brand_id'] ?? null,
-            'cover_image' => $data['cover_image'] ?? $product->cover_image,
-        ]);
+    'name'        => $data['name'],
+    'sku'         => $data['sku'] ?? null,
+    'price'       => $data['price'],
+    'status'      => $data['status'],
+    'category_id' => $data['category_id'] ?? null,
+    'brand_id'    => $data['brand_id'] ?? null,
+    'cover_image' => $data['cover_image'] ?? $product->cover_image,
+]);
 
         // อัปเดต stock
         if (array_key_exists('qty', $data)) {

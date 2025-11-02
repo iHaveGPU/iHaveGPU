@@ -94,4 +94,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         //
     }
+    protected $policies = [
+    \App\Models\Brand::class => \App\Policies\BrandPolicy::class,
+];
+
 }

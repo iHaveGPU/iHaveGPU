@@ -46,7 +46,16 @@ class CartController extends Controller
     public function add(Request $request, Product $product)
     {
         $qty = max(1, (int) $request->input('qty', 1));
+         $product->loadMissing('stock');
 
+         //ไม่มีสต๊อก
+         if(($product->stock_qty ?? 0) < 1){
+            return back()->withErrors(['cart' => 'สินค้าหมด ไม่สามารถเพิ่มลงตะกร้าได้.']);
+         }
+            //สต๊อกไม่พอ
+            if(($product->stock_qty ?? 0) < $qty){
+                return back()->withErrors(['cart' => 'สินค้าสต๊อกไม่เพียงพอ.']);
+        }
         $cart = session('cart', []);
         $cart[$product->id] = (int) (($cart[$product->id] ?? 0) + $qty);
         session(['cart' => $cart]);

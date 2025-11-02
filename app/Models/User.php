@@ -27,9 +27,18 @@ class User extends Authenticatable
     public function isCustomer(): bool  { return $this->role === 'customer'; }
     // (ถ้าต้องการ) แปลงรหัสผ่านอัตโนมัติ
     public function setPasswordAttribute($value)
-    {
-        if ($value && strlen($value) < 60) {
-            $this->attributes['password'] = bcrypt($value);
-        }
+{
+    if (empty($value)) {
+        $this->attributes['password'] = null;
+        return;
     }
+
+    // ถ้าเป็น bcrypt อยู่แล้ว (ขึ้นต้นด้วย $2y$ และยาว ~60) ให้เก็บตรง ๆ
+    if (is_string($value) && strlen($value) === 60 && str_starts_with($value, '$2y$')) {
+        $this->attributes['password'] = $value;
+    } else {
+        $this->attributes['password'] = bcrypt($value);
+    }
+}
+
 }

@@ -9,7 +9,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            DemoSeeder::class,
+    UsersSeeder::class,
+    AddCPUSeeder::class,
+    AddVGASeeder::class,
+    AddRamSeeder::class,
+    AddSSDSeeder::class,
+    AddKeyboardSeeder::class,
+    AddPSUSeeder::class,
+    AddCaseSeeder::class,
+    AddMonitorSeeder::class,
+    AddMouseSeeder::class, 
         ]);
     }
 }
